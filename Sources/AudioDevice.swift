@@ -194,6 +194,22 @@ func findBestAvailableDevice(checkAlive: Bool = true) -> (device: AudioInputDevi
     return nil
 }
 
+// MARK: - Transport Type
+
+func isBluetoothDevice(_ deviceID: AudioDeviceID) -> Bool {
+    var transportType: UInt32 = 0
+    var size = UInt32(MemoryLayout<UInt32>.size)
+    var addr = AudioObjectPropertyAddress(
+        mSelector: kAudioDevicePropertyTransportType,
+        mScope: kAudioObjectPropertyScopeGlobal,
+        mElement: kAudioObjectPropertyElementMain
+    )
+    guard AudioObjectGetPropertyData(deviceID, &addr, 0, nil, &size, &transportType) == noErr else {
+        return false
+    }
+    return transportType == kAudioDeviceTransportTypeBluetooth
+}
+
 // MARK: - Device Inspection
 
 func inspectDevice(_ device: AudioInputDevice) -> DeviceProperties {

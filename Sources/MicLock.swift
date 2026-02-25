@@ -154,8 +154,12 @@ class MicLock {
     // MARK: - Intermittent Silence Monitoring
 
     func startSilenceMonitoring() {
-        guard targetDevice != nil else { return }
+        guard let device = targetDevice else { return }
         guard sampleTimer == nil && windowEndTimer == nil && monitor == nil else { return }
+
+        // Bluetooth devices switch from A2DP to HFP/SCO when an input stream opens,
+        // degrading audio quality and causing volume oscillation. Skip sampling for these.
+        if isBluetoothDevice(device.id) { return }
 
         accumulatedSilence = 0
         windowHadSignal = false
