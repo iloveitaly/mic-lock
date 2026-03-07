@@ -54,10 +54,10 @@ class MicLock {
     private var pendingDeviceChange = false
     private var lastDeviceChangeTime: Date?
 
-    // Signals
+    /// Signals
     private var termSignalSource: DispatchSourceSignal?
 
-    // Output control
+    /// Output control
     var silent: Bool = false
 
     init(targetQuery: String? = nil) {

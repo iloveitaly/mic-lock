@@ -345,7 +345,7 @@ func cmdDiag(_ query: String) {
     // Header
     printHeader(device.name)
 
-    // Helper for aligned output (pad BEFORE styling)
+    /// Helper for aligned output (pad BEFORE styling)
     func row(_ label: String, _ value: String) {
         print("  " + label.padding(toLength: 12, withPad: " ", startingAt: 0).dim + value)
     }

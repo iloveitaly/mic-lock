@@ -30,7 +30,7 @@ struct Settings: Codable {
         sampleDuration: 2.0,
     )
 
-    // Handle missing keys when decoding older config files
+    /// Handle missing keys when decoding older config files
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         silenceTimeout = try container.decodeIfPresent(Double.self, forKey: .silenceTimeout) ?? Settings.defaults.silenceTimeout
