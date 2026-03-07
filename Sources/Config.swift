@@ -1,5 +1,5 @@
-import Foundation
 import Darwin
+import Foundation
 
 // MARK: - Paths
 
@@ -19,8 +19,8 @@ struct Settings: Codable {
     var enableSilenceDetection: Bool
 
     // Intermittent sampling (energy optimization)
-    var sampleInterval: Double  // seconds between sample windows
-    var sampleDuration: Double  // seconds each sample runs
+    var sampleInterval: Double // seconds between sample windows
+    var sampleDuration: Double // seconds each sample runs
 
     static let defaults = Settings(
         silenceTimeout: 5.0,
@@ -310,4 +310,3 @@ private func ensureConfigDir() -> Bool {
         return false
     }
 }
-

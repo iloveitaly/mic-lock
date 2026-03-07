@@ -1,5 +1,5 @@
-import AVFoundation
 import Accelerate
+import AVFoundation
 
 // MARK: - Audio Monitor
 

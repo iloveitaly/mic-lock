@@ -134,6 +134,7 @@ func cmdPick() {
         case .up:
             selected = (selected - 1 + devices.count) % devices.count
             render()
+
         case .down:
             selected = (selected + 1) % devices.count
             render()
@@ -185,11 +186,12 @@ func cmdStatus() {
     let devices = getInputDevices()
     let deviceToAlias = buildAliasMap(devices, loadAliases())
 
-    print("")  // Space below command
+    print("") // Space below command
 
     print("Active".dim + "  ", terminator: "")
     if let currentID = getDefaultInputDeviceID(),
-       let current = devices.first(where: { $0.id == currentID }) {
+       let current = devices.first(where: { $0.id == currentID })
+    {
         if let alias = deviceToAlias[current.name] {
             print(alias + " " + current.name.dim)
         } else {
@@ -374,7 +376,7 @@ func cmdDiag(_ query: String) {
     sampleAudioContinuous(
         duration: 5.0,
         threshold: settings.silenceThreshold,
-        onSample: { rms, hasSignal in
+        onSample: { rms, _ in
             print("\r  \(formatRMS(rms, threshold: settings.silenceThreshold))     ", terminator: "")
             fflush(stdout)
         },
@@ -578,7 +580,7 @@ func cmdStartup(_ args: [String]) {
         }
 
     case "disable":
-        if !isStartupEnabled() && !isStartupLoaded() {
+        if !isStartupEnabled(), !isStartupLoaded() {
             printSubtle("Already disabled")
             return
         }
@@ -608,7 +610,7 @@ func cmdStartup(_ args: [String]) {
         print("Startup".primary)
         print("")
         print("  " + "Status".padding(toLength: 10, withPad: " ", startingAt: 0).dim, terminator: "")
-        if enabled && loaded {
+        if enabled, loaded {
             print("enabled".green + " (running)")
         } else if enabled {
             print("enabled".yellow + " (not loaded)")

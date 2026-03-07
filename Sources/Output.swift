@@ -26,22 +26,22 @@ enum Sym {
 
 extension String {
     /// Secondary/muted text (device full names, hints)
-    var muted: String { self.dim }
+    var muted: String { dim }
 
     /// Primary emphasis
-    var primary: String { self.bold }
+    var primary: String { bold }
 
     /// Success state
-    var success: String { self.green }
+    var success: String { green }
 
     /// Error state
-    var error: String { self.red }
+    var error: String { red }
 
     /// Warning state
-    var warn: String { self.yellow }
+    var warn: String { yellow }
 
     /// Accent color for current/active items
-    var accent: String { self.cyan }
+    var accent: String { cyan }
 }
 
 // MARK: - Formatted Output

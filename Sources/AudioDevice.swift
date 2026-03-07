@@ -185,7 +185,7 @@ func findBestAvailableDevice(checkAlive: Bool = true) -> (device: AudioInputDevi
         let matches = devices.filter { $0.name.lowercased().contains(resolved.lowercased()) }
         if matches.count == 1 {
             let device = matches[0]
-            if checkAlive && !isDeviceAlive(device.id) {
+            if checkAlive, !isDeviceAlive(device.id) {
                 continue
             }
             return (device, query)

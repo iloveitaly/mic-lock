@@ -5,25 +5,25 @@ import Rainbow
 // MARK: - State
 
 enum MicLockState {
-    case normal           // On primary device, monitoring for silence
-    case fallback         // On fallback device, periodically checking primary
-    case checkingPrimary  // Temporarily sampling primary to see if it's back
+    case normal // On primary device, monitoring for silence
+    case fallback // On fallback device, periodically checking primary
+    case checkingPrimary // Temporarily sampling primary to see if it's back
 }
 
 // MARK: - Timing Constants
 
 private enum Timing {
-    static let debounceInterval: TimeInterval = 0.05    // 50ms - rapid device change filter
-    static let deviceSettleDelay: TimeInterval = 0.5    // 500ms - wait for device to settle
-    static let enforceRetryDelay: TimeInterval = 0.1    // 100ms - retry setting device
-    static let maxEnforceRetries = 3                    // max attempts to set device
+    static let debounceInterval: TimeInterval = 0.05 // 50ms - rapid device change filter
+    static let deviceSettleDelay: TimeInterval = 0.5 // 500ms - wait for device to settle
+    static let enforceRetryDelay: TimeInterval = 0.1 // 100ms - retry setting device
+    static let maxEnforceRetries = 3 // max attempts to set device
 }
 
 // MARK: - MicLock
 
 class MicLock {
     // Configuration
-    let targetQuery: String?  // nil = use priority list
+    let targetQuery: String? // nil = use priority list
     var settings: Settings
 
     // Current state
@@ -62,7 +62,7 @@ class MicLock {
 
     init(targetQuery: String? = nil) {
         self.targetQuery = targetQuery
-        self.settings = loadSettings()
+        settings = loadSettings()
     }
 
     // MARK: - Lifecycle
@@ -102,7 +102,7 @@ class MicLock {
             self?.checkDeviceAlive()
         }
 
-        if targetQuery == nil && settings.enableSilenceDetection {
+        if targetQuery == nil, settings.enableSilenceDetection {
             startSilenceMonitoring()
         }
 
@@ -123,7 +123,7 @@ class MicLock {
         AudioObjectAddPropertyListener(
             AudioObjectID(kAudioObjectSystemObject),
             &devicesAddress,
-            { (_, _, _, clientData) -> OSStatus in
+            { _, _, _, clientData -> OSStatus in
                 guard let clientData = clientData else { return noErr }
                 let lock = Unmanaged<MicLock>.fromOpaque(clientData).takeUnretainedValue()
                 DispatchQueue.main.async { lock.onDevicesChanged() }
@@ -141,7 +141,7 @@ class MicLock {
         AudioObjectAddPropertyListener(
             AudioObjectID(kAudioObjectSystemObject),
             &defaultInputAddress,
-            { (_, _, _, clientData) -> OSStatus in
+            { _, _, _, clientData -> OSStatus in
                 guard let clientData = clientData else { return noErr }
                 let lock = Unmanaged<MicLock>.fromOpaque(clientData).takeUnretainedValue()
                 DispatchQueue.main.async { lock.onDefaultInputChanged() }
@@ -154,8 +154,8 @@ class MicLock {
     // MARK: - Intermittent Silence Monitoring
 
     func startSilenceMonitoring() {
-        guard let device = targetDevice else { return }
-        guard sampleTimer == nil && windowEndTimer == nil && monitor == nil else { return }
+        guard targetDevice != nil else { return }
+        guard sampleTimer == nil, windowEndTimer == nil, monitor == nil else { return }
 
         // Bluetooth devices switch from A2DP to HFP/SCO when an input stream opens,
         // degrading audio quality and causing volume oscillation. Skip sampling for these.
@@ -245,7 +245,7 @@ class MicLock {
             }
 
             // Check if we should trigger fallback
-            if accumulatedSilence >= settings.silenceTimeout && state == .normal {
+            if accumulatedSilence >= settings.silenceTimeout, state == .normal {
                 DispatchQueue.main.async { [weak self] in
                     self?.transitionToFallback()
                 }
@@ -264,7 +264,7 @@ class MicLock {
         }
 
         // Debug output (throttled)
-        if !silent && Date().timeIntervalSince(lastDebugPrint) >= 0.2 {
+        if !silent, Date().timeIntervalSince(lastDebugPrint) >= 0.2 {
             lastDebugPrint = Date()
             let rmsDisplay = formatRMS(rms, threshold: settings.silenceThreshold)
             let stateStr = state == .fallback ? " [fallback]".dim : ""
@@ -337,7 +337,7 @@ class MicLock {
         }
     }
 
-    private func sampleFallbackCandidate(device: AudioInputDevice, query: String, fallbackIndex: Int) {
+    private func sampleFallbackCandidate(device: AudioInputDevice, query: String, fallbackIndex _: Int) {
         sampleAudio(duration: 1.5, threshold: settings.silenceThreshold) { [weak self] hasSignal in
             guard let self = self else { return }
 
@@ -511,10 +511,10 @@ class MicLock {
                 if !silent { print(Sym.minus + " " + (previousQuery ?? previousTarget!.name) + " disconnected".dim) }
             }
         } else {
-            if previousTarget == nil && targetDevice != nil {
+            if previousTarget == nil, targetDevice != nil {
                 if !silent { print(Sym.plus + " " + targetDevice!.name.accent + " connected".dim) }
                 enforceTarget()
-            } else if previousTarget != nil && targetDevice == nil {
+            } else if previousTarget != nil, targetDevice == nil {
                 if !silent { print(Sym.minus + " " + previousTarget!.name + " disconnected".dim) }
             }
         }
@@ -525,7 +525,8 @@ class MicLock {
 
         // Debounce rapid device changes
         if let lastTime = lastDeviceChangeTime,
-           Date().timeIntervalSince(lastTime) < Timing.debounceInterval {
+           Date().timeIntervalSince(lastTime) < Timing.debounceInterval
+        {
             return
         }
         lastDeviceChangeTime = Date()
@@ -552,7 +553,7 @@ class MicLock {
         }
 
         // Restart monitoring after device change settles
-        if targetQuery == nil && settings.enableSilenceDetection {
+        if targetQuery == nil, settings.enableSilenceDetection {
             DispatchQueue.main.asyncAfter(deadline: .now() + Timing.deviceSettleDelay) { [weak self] in
                 self?.startSilenceMonitoring()
             }

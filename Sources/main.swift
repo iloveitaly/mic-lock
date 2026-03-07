@@ -45,7 +45,9 @@ case "set", "pick":
             let matches = devices.filter { $0.name.lowercased().contains(resolved.lowercased()) }
             if matches.count > 1 {
                 printError("'\(query)' matches multiple devices:")
-                for m in matches { print("  - \(m.name)") }
+                for m in matches {
+                    print("  - \(m.name)")
+                }
                 exit(1)
             }
         }

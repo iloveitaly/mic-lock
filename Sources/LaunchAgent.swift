@@ -52,7 +52,7 @@ func enableStartup() -> Bool {
         "RunAtLoad": true,
         "KeepAlive": true,
         "StandardOutPath": configDir.appendingPathComponent("daemon.log").path,
-        "StandardErrorPath": configDir.appendingPathComponent("daemon.log").path
+        "StandardErrorPath": configDir.appendingPathComponent("daemon.log").path,
     ]
 
     // Write the plist

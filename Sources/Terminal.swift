@@ -38,8 +38,8 @@ func readKey() -> Key {
         case 0x20: return .space
         case 0x1B: return .escape
         case 0x71: return .char("q")
-        case 0x6A: return .down   // j
-        case 0x6B: return .up     // k
+        case 0x6A: return .down // j
+        case 0x6B: return .up // k
         default:
             let scalar = Unicode.Scalar(buf[0])
             return .char(Character(scalar))

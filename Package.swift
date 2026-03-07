@@ -5,7 +5,7 @@ let package = Package(
     name: "miclock",
     platforms: [.macOS(.v12)],
     dependencies: [
-        .package(url: "https://github.com/onevcat/Rainbow", from: "4.0.0")
+        .package(url: "https://github.com/onevcat/Rainbow", from: "4.0.0"),
     ],
     targets: [
         .executableTarget(
@@ -16,6 +16,6 @@ let package = Package(
         .testTarget(
             name: "miclockTests",
             dependencies: ["miclock"]
-        )
+        ),
     ]
 )
