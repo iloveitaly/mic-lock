@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - gha
   workflow_dispatch:
 
 permissions:
