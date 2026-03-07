@@ -12,6 +12,10 @@ let package = Package(
             name: "miclock",
             dependencies: ["Rainbow"],
             path: "Sources"
+        ),
+        .testTarget(
+            name: "miclockTests",
+            dependencies: ["miclock"]
         )
     ]
 )
