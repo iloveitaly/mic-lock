@@ -159,7 +159,7 @@ class MicLock {
 
         // Bluetooth devices switch from A2DP to HFP/SCO when an input stream opens,
         // degrading audio quality and causing volume oscillation. Skip sampling for these.
-        if isBluetoothDevice(device.id) { return }
+        if let target = targetDevice, isBluetoothDevice(target.id) { return }
 
         accumulatedSilence = 0
         windowHadSignal = false
