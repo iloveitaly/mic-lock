@@ -202,7 +202,7 @@ func isBluetoothDevice(_ deviceID: AudioDeviceID) -> Bool {
     var addr = AudioObjectPropertyAddress(
         mSelector: kAudioDevicePropertyTransportType,
         mScope: kAudioObjectPropertyScopeGlobal,
-        mElement: kAudioObjectPropertyElementMain
+        mElement: kAudioObjectPropertyElementMain,
     )
     guard AudioObjectGetPropertyData(deviceID, &addr, 0, nil, &size, &transportType) == noErr else {
         return false
