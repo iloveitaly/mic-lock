@@ -1,0 +1,51 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+    steps:
+      - uses: googleapis/release-please-action@v4
+        id: release
+
+  build-and-release:
+    runs-on: macos-latest
+    needs: [release-please]
+    if: needs.release-please.outputs.release_created
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - uses: jdx/mise-action@v3
+        with:
+          experimental: true
+
+      - name: Run Tests
+        run: just test
+
+      - name: Build Universal Binary
+        run: swift build -c release --arch arm64 --arch x86_64
+
+      - name: Zip Binary
+        run: zip -j miclock.zip .build/apple/Products/Release/miclock
+
+      - name: Upload Release Asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: miclock.zip
+          tag_name: ${{ needs.release-please.outputs.tag_name }}
+          generate_release_notes: false
