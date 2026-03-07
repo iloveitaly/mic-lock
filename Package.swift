@@ -11,11 +11,11 @@ let package = Package(
         .executableTarget(
             name: "miclock",
             dependencies: ["Rainbow"],
-            path: "Sources"
+            path: "Sources",
         ),
         .testTarget(
             name: "miclockTests",
-            dependencies: ["miclock"]
+            dependencies: ["miclock"],
         ),
-    ]
+    ],
 )

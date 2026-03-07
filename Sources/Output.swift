@@ -48,7 +48,7 @@ extension String {
 
 /// Format device name with optional alias
 func formatDevice(_ name: String, alias: String?) -> String {
-    if let alias = alias {
+    if let alias {
         return "\(alias.primary) \("(\(name))".muted)"
     }
     return name

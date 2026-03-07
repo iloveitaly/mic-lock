@@ -44,7 +44,7 @@ func readKey() -> Key {
             let scalar = Unicode.Scalar(buf[0])
             return .char(Character(scalar))
         }
-    } else if n == 3 && buf[0] == 27 && buf[1] == 91 {
+    } else if n == 3, buf[0] == 27, buf[1] == 91 {
         switch buf[2] {
         case 65: return .up
         case 66: return .down

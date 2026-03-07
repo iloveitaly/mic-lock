@@ -16,7 +16,7 @@ struct DeviceProperties {
     var transportType: String = "Unknown"
     var sampleRate: Double = 0
     var streamCount: Int = 0
-    var jackConnected: Bool? = nil
+    var jackConnected: Bool?
 }
 
 // MARK: - Device Enumeration
@@ -25,20 +25,20 @@ func getInputDevices() -> [AudioInputDevice] {
     var propertyAddress = AudioObjectPropertyAddress(
         mSelector: kAudioHardwarePropertyDevices,
         mScope: kAudioObjectPropertyScopeGlobal,
-        mElement: kAudioObjectPropertyElementMain
+        mElement: kAudioObjectPropertyElementMain,
     )
 
     var dataSize: UInt32 = 0
     guard AudioObjectGetPropertyDataSize(
         AudioObjectID(kAudioObjectSystemObject),
-        &propertyAddress, 0, nil, &dataSize
+        &propertyAddress, 0, nil, &dataSize,
     ) == noErr else { return [] }
 
     let deviceCount = Int(dataSize) / MemoryLayout<AudioDeviceID>.size
     var deviceIDs = [AudioDeviceID](repeating: 0, count: deviceCount)
     guard AudioObjectGetPropertyData(
         AudioObjectID(kAudioObjectSystemObject),
-        &propertyAddress, 0, nil, &dataSize, &deviceIDs
+        &propertyAddress, 0, nil, &dataSize, &deviceIDs,
     ) == noErr else { return [] }
 
     var inputDevices: [AudioInputDevice] = []
@@ -48,7 +48,7 @@ func getInputDevices() -> [AudioInputDevice] {
         var inputChannelsAddress = AudioObjectPropertyAddress(
             mSelector: kAudioDevicePropertyStreamConfiguration,
             mScope: kAudioDevicePropertyScopeInput,
-            mElement: kAudioObjectPropertyElementMain
+            mElement: kAudioObjectPropertyElementMain,
         )
 
         var inputSize: UInt32 = 0
@@ -56,7 +56,7 @@ func getInputDevices() -> [AudioInputDevice] {
 
         let bufferListPtr = UnsafeMutableRawPointer.allocate(
             byteCount: Int(inputSize),
-            alignment: MemoryLayout<AudioBufferList>.alignment
+            alignment: MemoryLayout<AudioBufferList>.alignment,
         )
         defer { bufferListPtr.deallocate() }
 
@@ -71,7 +71,7 @@ func getInputDevices() -> [AudioInputDevice] {
         var uidAddress = AudioObjectPropertyAddress(
             mSelector: kAudioDevicePropertyDeviceUID,
             mScope: kAudioObjectPropertyScopeGlobal,
-            mElement: kAudioObjectPropertyElementMain
+            mElement: kAudioObjectPropertyElementMain,
         )
         var uid: CFString? = nil
         var uidSize = UInt32(MemoryLayout<CFString?>.size)
@@ -82,7 +82,7 @@ func getInputDevices() -> [AudioInputDevice] {
         var nameAddress = AudioObjectPropertyAddress(
             mSelector: kAudioDevicePropertyDeviceNameCFString,
             mScope: kAudioObjectPropertyScopeGlobal,
-            mElement: kAudioObjectPropertyElementMain
+            mElement: kAudioObjectPropertyElementMain,
         )
         var name: CFString? = nil
         var nameSize = UInt32(MemoryLayout<CFString?>.size)
@@ -101,7 +101,7 @@ func getDefaultInputDeviceID() -> AudioDeviceID? {
     var propertyAddress = AudioObjectPropertyAddress(
         mSelector: kAudioHardwarePropertyDefaultInputDevice,
         mScope: kAudioObjectPropertyScopeGlobal,
-        mElement: kAudioObjectPropertyElementMain
+        mElement: kAudioObjectPropertyElementMain,
     )
 
     var deviceID: AudioDeviceID = 0
@@ -109,7 +109,7 @@ func getDefaultInputDeviceID() -> AudioDeviceID? {
 
     guard AudioObjectGetPropertyData(
         AudioObjectID(kAudioObjectSystemObject),
-        &propertyAddress, 0, nil, &size, &deviceID
+        &propertyAddress, 0, nil, &size, &deviceID,
     ) == noErr else { return nil }
 
     return deviceID
@@ -119,7 +119,7 @@ func setDefaultInputDevice(_ deviceID: AudioDeviceID) -> Bool {
     var propertyAddress = AudioObjectPropertyAddress(
         mSelector: kAudioHardwarePropertyDefaultInputDevice,
         mScope: kAudioObjectPropertyScopeGlobal,
-        mElement: kAudioObjectPropertyElementMain
+        mElement: kAudioObjectPropertyElementMain,
     )
 
     var mutableDeviceID = deviceID
@@ -128,7 +128,7 @@ func setDefaultInputDevice(_ deviceID: AudioDeviceID) -> Bool {
         &propertyAddress,
         0, nil,
         UInt32(MemoryLayout<AudioDeviceID>.size),
-        &mutableDeviceID
+        &mutableDeviceID,
     )
 
     return status == noErr
@@ -140,7 +140,7 @@ func isDeviceAlive(_ deviceID: AudioDeviceID) -> Bool {
     var propertyAddress = AudioObjectPropertyAddress(
         mSelector: kAudioDevicePropertyDeviceIsAlive,
         mScope: kAudioObjectPropertyScopeGlobal,
-        mElement: kAudioObjectPropertyElementMain
+        mElement: kAudioObjectPropertyElementMain,
     )
 
     var isAlive: UInt32 = 0
@@ -154,7 +154,7 @@ func isDeviceRunning(_ deviceID: AudioDeviceID) -> Bool {
     var propertyAddress = AudioObjectPropertyAddress(
         mSelector: kAudioDevicePropertyDeviceIsRunning,
         mScope: kAudioObjectPropertyScopeInput,
-        mElement: kAudioObjectPropertyElementMain
+        mElement: kAudioObjectPropertyElementMain,
     )
 
     var isRunning: UInt32 = 0
@@ -221,7 +221,7 @@ func inspectDevice(_ device: AudioInputDevice) -> DeviceProperties {
     var addr = AudioObjectPropertyAddress(
         mSelector: kAudioDevicePropertyDeviceIsAlive,
         mScope: kAudioObjectPropertyScopeGlobal,
-        mElement: kAudioObjectPropertyElementMain
+        mElement: kAudioObjectPropertyElementMain,
     )
     if AudioObjectGetPropertyData(device.id, &addr, 0, nil, &size, &isAlive) == noErr {
         props.isAlive = isAlive == 1

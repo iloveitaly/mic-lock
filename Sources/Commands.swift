@@ -34,11 +34,10 @@ func cmdListPlain() {
         let marker = isCurrent ? Sym.current : " "
         let num = "\(index + 1).".dim
 
-        let name: String
-        if let alias = deviceToAlias[device.name] {
-            name = formatDevice(device.name, alias: alias)
+        let name: String = if let alias = deviceToAlias[device.name] {
+            formatDevice(device.name, alias: alias)
         } else {
-            name = isCurrent ? device.name.accent : device.name
+            isCurrent ? device.name.accent : device.name
         }
 
         print("\(marker) \(num) \(name)")
@@ -99,21 +98,19 @@ func cmdPick() {
             let cursor = isSelected ? Sym.cursor.cyan : " "
 
             // Priority position
-            let position: String
-            if let pos = priorityOrder.firstIndex(of: i) {
-                position = formatPosition(pos + 1)
+            let position: String = if let pos = priorityOrder.firstIndex(of: i) {
+                formatPosition(pos + 1)
             } else {
-                position = "   "
+                "   "
             }
 
             // Device name
-            let displayName: String
-            if let alias = deviceToAlias[device.name] {
-                displayName = isSelected
+            let displayName: String = if let alias = deviceToAlias[device.name] {
+                isSelected
                     ? "\(alias.bold) \("(\(device.name))".dim)"
                     : "\(alias) \("(\(device.name))".dim)"
             } else {
-                displayName = isSelected ? device.name.bold : device.name
+                isSelected ? device.name.bold : device.name
             }
 
             // Highlight row
@@ -403,7 +400,7 @@ func cmdDiag(_ query: String) {
                 _ = setDefaultInputDevice(orig)
             }
             exit(0)
-        }
+        },
     )
 
     RunLoop.main.run()

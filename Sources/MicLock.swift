@@ -115,7 +115,7 @@ class MicLock {
         var devicesAddress = AudioObjectPropertyAddress(
             mSelector: kAudioHardwarePropertyDevices,
             mScope: kAudioObjectPropertyScopeGlobal,
-            mElement: kAudioObjectPropertyElementMain
+            mElement: kAudioObjectPropertyElementMain,
         )
 
         let selfPtr = Unmanaged.passUnretained(self).toOpaque()
@@ -124,30 +124,30 @@ class MicLock {
             AudioObjectID(kAudioObjectSystemObject),
             &devicesAddress,
             { _, _, _, clientData -> OSStatus in
-                guard let clientData = clientData else { return noErr }
+                guard let clientData else { return noErr }
                 let lock = Unmanaged<MicLock>.fromOpaque(clientData).takeUnretainedValue()
                 DispatchQueue.main.async { lock.onDevicesChanged() }
                 return noErr
             },
-            selfPtr
+            selfPtr,
         )
 
         var defaultInputAddress = AudioObjectPropertyAddress(
             mSelector: kAudioHardwarePropertyDefaultInputDevice,
             mScope: kAudioObjectPropertyScopeGlobal,
-            mElement: kAudioObjectPropertyElementMain
+            mElement: kAudioObjectPropertyElementMain,
         )
 
         AudioObjectAddPropertyListener(
             AudioObjectID(kAudioObjectSystemObject),
             &defaultInputAddress,
             { _, _, _, clientData -> OSStatus in
-                guard let clientData = clientData else { return noErr }
+                guard let clientData else { return noErr }
                 let lock = Unmanaged<MicLock>.fromOpaque(clientData).takeUnretainedValue()
                 DispatchQueue.main.async { lock.onDefaultInputChanged() }
                 return noErr
             },
-            selfPtr
+            selfPtr,
         )
     }
 
@@ -339,15 +339,15 @@ class MicLock {
 
     private func sampleFallbackCandidate(device: AudioInputDevice, query: String, fallbackIndex _: Int) {
         sampleAudio(duration: 1.5, threshold: settings.silenceThreshold) { [weak self] hasSignal in
-            guard let self = self else { return }
+            guard let self else { return }
 
             if hasSignal {
-                if !self.silent { printSuccess("\(query) has signal") }
-                self.commitToFallback(device: device, query: query)
+                if !silent { printSuccess("\(query) has signal") }
+                commitToFallback(device: device, query: query)
             } else {
-                if !self.silent { printError("\(query) silent, trying next...") }
-                self.skippedDevices.insert(query)
-                self.tryNextFallbackDevice(startingAfter: device.id)
+                if !silent { printError("\(query) silent, trying next...") }
+                skippedDevices.insert(query)
+                tryNextFallbackDevice(startingAfter: device.id)
             }
         }
     }
@@ -402,28 +402,28 @@ class MicLock {
 
     private func samplePrimaryDevice(_ device: AudioInputDevice, query: String) {
         sampleAudio(duration: 2.0, threshold: settings.silenceThreshold) { [weak self] hasSignal in
-            guard let self = self else { return }
+            guard let self else { return }
 
             if hasSignal {
-                if !self.silent { printSuccess("\(query) has signal!") }
+                if !silent { printSuccess("\(query) has signal!") }
 
-                self.state = .normal
-                self.processPendingDeviceChange()
-                self.stopPrimaryCheckTimer()
-                self.targetDevice = device
-                self.currentQuery = query
-                self.primaryQuery = nil
-                self.primaryDevice = nil
-                self.silenceStartTime = nil
+                state = .normal
+                processPendingDeviceChange()
+                stopPrimaryCheckTimer()
+                targetDevice = device
+                currentQuery = query
+                primaryQuery = nil
+                primaryDevice = nil
+                silenceStartTime = nil
 
-                self.enforceTarget()
+                enforceTarget()
 
                 DispatchQueue.main.asyncAfter(deadline: .now() + Timing.deviceSettleDelay) { [weak self] in
                     self?.startSilenceMonitoring()
                 }
             } else {
-                if !self.silent { printError("\(query) still silent") }
-                self.returnToFallback()
+                if !silent { printError("\(query) still silent") }
+                returnToFallback()
             }
         }
     }

@@ -14,7 +14,7 @@ class AudioMonitor {
         guard !isRunning else { return }
 
         engine = AVAudioEngine()
-        guard let engine = engine else { return }
+        guard let engine else { return }
 
         let inputNode = engine.inputNode
         let format = inputNode.outputFormat(forBus: 0)
@@ -68,7 +68,7 @@ class AudioMonitor {
 func sampleAudio(
     duration: TimeInterval,
     threshold: Float,
-    completion: @escaping (Bool) -> Void
+    completion: @escaping (Bool) -> Void,
 ) {
     let engine = AVAudioEngine()
     let inputNode = engine.inputNode
@@ -120,7 +120,7 @@ func sampleAudioContinuous(
     duration: TimeInterval,
     threshold: Float,
     onSample: @escaping (Float, Bool) -> Void,
-    completion: @escaping (Int, Int) -> Void
+    completion: @escaping (Int, Int) -> Void,
 ) {
     let engine = AVAudioEngine()
     let inputNode = engine.inputNode

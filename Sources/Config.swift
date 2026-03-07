@@ -27,7 +27,7 @@ struct Settings: Codable {
         silenceThreshold: 0.00001,
         enableSilenceDetection: true,
         sampleInterval: 10.0,
-        sampleDuration: 2.0
+        sampleDuration: 2.0,
     )
 
     // Handle missing keys when decoding older config files
