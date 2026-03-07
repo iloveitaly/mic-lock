@@ -13,6 +13,7 @@ func printUsage() {
     print("  config".accent + "            " + "Settings".dim)
     print("  alias [name]".accent + "      " + "Manage aliases".dim)
     print("  startup".accent + "           " + "Manage login startup".dim)
+    print("  version".accent + "           " + "Print version".dim)
 }
 
 // MARK: - Main
@@ -27,6 +28,10 @@ if args.isEmpty {
 }
 
 switch args[0].lowercased() {
+case "version", "--version", "-v":
+    print(AppVersion.current)
+    exit(0)
+
 case "set", "pick":
     if args.count == 1 {
         cmdPick()
